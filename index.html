@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Park Trash Application</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+          .overlay {
+      opacity:0;
+      position:fixed;
+      top:-999em;
+      left:-999em;
+      width:100%;
+      height:100%;
+      display:table;
+      background:rgba(0,0,0,0.8);
+      -webkit-animation: splash 10s forwards;
+      animation: splash 10s forwards;
+    }
+    .overlay-inner {
+      display:table-cell;
+      vertical-align:middle;
+      text-align:center;
+    }
+    .message {
+      border:10px solid black;
+      border-radius:10px;
+      background:#e6e4e1;
+      display:inline-block;
+      vertical-align:middle;
+      width:50%;
+      text-align:middle;
+      padding:10px;
+    }
+    @-webkit-keyframes splash {
+      0%  {opacity: 0;top:0;left:0}
+      20% {opacity:1;top:0;left:0}
+      60% {opacity:1;top:0;left:0}
+      99% {top:0;left:0}
+      100% {opacity:0;top:-999em;left:-999em}
+    }
+    @-moz-keyframes splash {
+      0%  {opacity: 0;top:0;left:0}
+      20% {opacity:1;top:0;left:0}
+      60% {opacity:1;top:0;left:0}
+      99% {top:0;left:0}
+      100% {opacity:0;top:-999em;left:-999em}
+    }
+    @-ms-keyframes splash {
+      0%   {opacity: 0;top:0;left:0}
+         20% {opacity:1;top:0;left:0}
+         60% {opacity:1;top:0;left:0}
+         99% {top:0;left:0}
+         100% {opacity:0;top:-999em;left:-999em}
+    }
+    @keyframes splash {
+      0%  {opacity: 0;top:0;left:0}
+      20% {opacity:1;top:0;left:0}
+      60% {opacity:1;top:0;left:0}
+      99% {top:0;left:0}
+      100% {opacity:0;top:-999em;left:-999em}
+    }
+    </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.17/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.17/"></script>
+    <script>
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/widgets/BasemapToggle",
+      "esri/widgets/BasemapGallery",
+      "esri/layers/FeatureLayer",
+      "esri/widgets/Locate",
+      "esri/widgets/Editor",
+      "esri/widgets/Expand"
+    ], function(Map, MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand) {
+
+      var map = new Map({
+        basemap: "topo-vector"
+      });
+
+      //default app view
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-75.20446521174442, 39.984837673663165], // longitude, latitude
+        zoom: 13
+      });
+
+      //adds city specific basemaps to app
+      var basemapGallery = new BasemapGallery({
+        view: view,
+        containter: document.createElement("div"),
+        source: {
+          portal: {
+            url: "https://phl.maps.arcgis.com",
+            useVectorBasemaps: false // Load vector tile basemaps
+          }
+        }
+      });
+      //adds expandable basemap gallery
+      var bgExpand = new Expand({
+        view: view,
+        content: basemapGallery
+      });
+      //adds gallery widget
+      view.ui.add(bgExpand, "top-right");
+
+      //lets users know their location via the default button and zooms to it
+      var locate = new Locate({
+        view: view,
+        useHeadingEnabled: false,
+        goToOverride: function (view, options) {
+          options.target.scale = 1500; // Override the default map scale
+          return view.goTo(options.target);
+        }
+      });
+
+      //adds locate button
+      view.ui.add(locate, "top-left");
+
+      //pop up content for trash and park layer
+      var popupPoints = {
+        "title": "{TYPE}",
+        "content": "<b>Additional Details:</b> {COMMENT} \n <b>Status:</b> {STATUS}"
+      }
+      var popupParks = {
+      "title": "{PARK_NAME}"
+      }
+
+      //add trash point layer to maps
+      var trashLayer = new FeatureLayer({
+        url: "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Trash/FeatureServer/0",
+        outFields: ["TYPE", "COMMENT", "STATUS"],
+        popupTemplate:popupPoints
+      });
+      map.add(trashLayer,0);
+
+      //adds park layer to app
+      var parksLayer = new FeatureLayer({
+        url:
+          "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Parks/FeatureServer/0",
+        outFields: ["PARK_NAME"],
+        popupTemplate: popupParks
+      });
+      //adds parks layer
+      map.add(parksLayer, 0);
+
+      //adds editing functionality
+      var editor = new Editor({
+        view: view,
+        container: document.createElement("div")
+      });
+      //adds expandable editor
+      var edExpand = new Expand({
+        view: view,
+        content: editor
+      });
+      // Add widget to top left of the view
+      view.ui.add(edExpand, "top-left");
+});
+</script>
+  </head>
+  <body>
+    <div id="viewDiv"></div>
+    <div id="editorDiv"></div>
+    <div class="overlay">
+      <div class="overlay-inner">
+        <div class="message">
+          <p>Welcome to the Park Trash App <a href="https://www.visitphilly.com/things-to-do/attractions/fairmount-park/">More Information Here</a></p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
