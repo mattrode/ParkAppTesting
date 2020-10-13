@@ -80,8 +80,9 @@
       "esri/layers/FeatureLayer",
       "esri/widgets/Locate",
       "esri/widgets/Editor",
-      "esri/widgets/Expand"
-    ], function(Map, MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand) {
+      "esri/widgets/Expand",
+      "esri/widgets/Legend"
+    ], function(Map, MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend) {
 
       var map = new Map({
         basemap: "topo-vector"
@@ -166,6 +167,18 @@
       });
       // Add widget to top left of the view
       view.ui.add(edExpand, "top-left");
+
+      //adds a legend
+      var legend = new Legend({
+        view:view,
+        layerInfos:[
+          {
+            layer:trashLayer,
+            title:"Trash Cleanup Status"
+          }
+        ]
+      });
+      view.ui.add(legend, "bottom-right")
 });
 </script>
   </head>
@@ -175,7 +188,7 @@
     <div class="overlay">
       <div class="overlay-inner">
         <div class="message">
-          <p>Welcome to the Park Trash App <a href="https://www.visitphilly.com/things-to-do/attractions/fairmount-park/">More Information Here</a></p>
+          <p>Welcome to the Park Trash App! Please add trash points or see the status of Trash Pickup in Philly Parks.</p>
         </div>
       </div>
     </div>
