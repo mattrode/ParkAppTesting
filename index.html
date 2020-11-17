@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>Park Trash Application</title>
+    <title>Parks Trash Application</title>
     <style>
       html,
       body,
@@ -73,7 +73,13 @@
     <script src="https://js.arcgis.com/4.17/"></script>
     <script>
     require([
+      "esri/config",
       "esri/Map",
+      "esri/portal/Portal",
+      "esri/identity/OAuthInfo",
+      "esri/identity/IdentityManager",
+      "esri/portal/PortalQueryParams",
+      "esri/Basemap",
       "esri/views/MapView",
       "esri/widgets/BasemapToggle",
       "esri/widgets/BasemapGallery",
@@ -81,31 +87,46 @@
       "esri/widgets/Locate",
       "esri/widgets/Editor",
       "esri/widgets/Expand",
-      "esri/widgets/Legend"
-    ], function(Map, MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend) {
+      "esri/widgets/Legend",
+      "esri/widgets/Zoom"
+    ], function(esriConfig, Map, Portal, OAuthInfo, esriId, PortalQueryParams, Basemap, MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend, Zoom) {
+
+
+      //adds portal for basemaps
+      esriConfig.portalUrl = "https://phl.maps.arcgis.com";
+
+            //loading the "city" basemap
+      var portal = new Portal()
+      portal
+        .load()
+        .then(function(){
+      var basemap = new Basemap({
+        portalItem: {
+          id: "83b437be7fd347dd9290e6157b5bfb03"
+        }
+      });
 
       var map = new Map({
-        basemap: "topo-vector"
+        basemap: "topo"
       });
 
       //default app view
       var view = new MapView({
         container: "viewDiv",
         map: map,
-        center: [-75.20446521174442, 39.984837673663165], // longitude, latitude
-        zoom: 13
+        center: [-75.204, 39.984], // longitude, latitude
+        zoom: 15
       });
 
+      //Constrain the max and min zoom levels
+      view.constraints = {
+        minZoom: 0,
+        maxZoom: 22
+      };
       //adds city specific basemaps to app
       var basemapGallery = new BasemapGallery({
-        view: view,
-        containter: document.createElement("div"),
-        source: {
-          portal: {
-            url: "https://phl.maps.arcgis.com",
-            useVectorBasemaps: false // Load vector tile basemaps
-          }
-        }
+        view: view
+
       });
       //adds expandable basemap gallery
       var bgExpand = new Expand({
@@ -133,13 +154,13 @@
         "title": "{TYPE}",
         "content": "<b>Additional Details:</b> {COMMENT} \n <b>Status:</b> {STATUS}"
       }
-      var popupParks = {
-      "title": "{PARK_NAME}"
-      }
+      //var popupParks = {
+      //"title": "{PARK_NAME}"
+      //}
 
       //add trash point layer to maps
       var trashLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Trash/FeatureServer/0",
+        url: "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Trash_Points/FeatureServer/0",
         outFields: ["TYPE", "COMMENT", "STATUS"],
         popupTemplate:popupPoints
       });
@@ -149,8 +170,8 @@
       var parksLayer = new FeatureLayer({
         url:
           "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Parks/FeatureServer/0",
-        outFields: ["PARK_NAME"],
-        popupTemplate: popupParks
+        //outFields: ["PARK_NAME"],
+        //popupTemplate: popupParks
       });
       //adds parks layer
       map.add(parksLayer, 0);
@@ -179,6 +200,7 @@
         ]
       });
       view.ui.add(legend, "bottom-right")
+});
 });
 </script>
   </head>
