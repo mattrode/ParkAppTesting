@@ -89,13 +89,14 @@
       "esri/widgets/Expand",
       "esri/widgets/Legend",
       "esri/widgets/Zoom"
-    ], function(esriConfig, Map, Portal, OAuthInfo, esriId, PortalQueryParams, Basemap, MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend, Zoom) {
+    ], function(esriConfig, Map, Portal, OAuthInfo, esriId, PortalQueryParams, Basemap,
+      MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend, Zoom) {
 
 
       //adds portal for basemaps
       esriConfig.portalUrl = "https://phl.maps.arcgis.com";
 
-            //loading the "city" basemap
+      //loading the "city" basemap
       var portal = new Portal()
       portal
         .load()
@@ -160,7 +161,7 @@
 
       //add trash point layer to maps
       var trashLayer = new FeatureLayer({
-        url: "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Trash_Points/FeatureServer/0",
+        url: "https://services.arcgis.com/fLeGjb7u4uXqeF9q/ArcGIS/rest/services/Trash_Points_Public/FeatureServer/0",
         outFields: ["TYPE", "COMMENT", "STATUS"],
         popupTemplate:popupPoints
       });
