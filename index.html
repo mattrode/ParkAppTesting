@@ -77,24 +77,22 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.8.2.js"></script>
     <script>
 
+    //overlay
     $(function(){
-var overlay = $('<div id="overlay"></div>');
-overlay.show();
-overlay.appendTo(document.body);
-$('.popup').show();
-$('.close').click(function(){
-$('.popup').hide();
-overlay.appendTo(document.body).remove();
-return false;
+    var overlay = $('<div id="overlay"></div>');
+    overlay.show();
+    overlay.appendTo(document.body);
+    $('.popup').show();
+    $('.close').click(function(){
+    $('.popup').hide();
+    overlay.appendTo(document.body).remove();
+    return false;
 });
 
-
-
-
-$('.x').click(function(){
-$('.popup').hide();
-overlay.appendTo(document.body).remove();
-return false;
+    $('.x').click(function(){
+    $('.popup').hide();
+    overlay.appendTo(document.body).remove();
+    return false;
 });
 });
 
@@ -114,9 +112,10 @@ return false;
       "esri/widgets/Editor",
       "esri/widgets/Expand",
       "esri/widgets/Legend",
-      "esri/widgets/Zoom"
+      "esri/widgets/Zoom",
+      "esri/widgets/Attachments"
     ], function(esriConfig, Map, Portal, OAuthInfo, esriId, PortalQueryParams, Basemap,
-      MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend, Zoom) {
+      MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend, Zoom, Attachments) {
 
 
       //adds portal for basemaps
@@ -206,6 +205,7 @@ return false;
       //adds editing functionality
       var editor = new Editor({
         view: view,
+        allowedWorkflows: ["create"], // allows only creation
         container: document.createElement("div")
       });
       //adds expandable editor
