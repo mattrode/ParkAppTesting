@@ -113,9 +113,10 @@
       "esri/widgets/Expand",
       "esri/widgets/Legend",
       "esri/widgets/Zoom",
-      "esri/widgets/Attachments"
+      "esri/widgets/Attachments",
+      "esri/widgets/Search"
     ], function(esriConfig, Map, Portal, OAuthInfo, esriId, PortalQueryParams, Basemap,
-      MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend, Zoom, Attachments) {
+      MapView, BasemapToggle, BasemapGallery, FeatureLayer, Locate, Editor, Expand, Legend, Zoom, Attachments, Search) {
 
 
       //adds portal for basemaps
@@ -160,7 +161,7 @@
         content: basemapGallery
       });
       //adds gallery widget
-      view.ui.add(bgExpand, "top-right");
+      view.ui.add(bgExpand, "bottom-left");
 
       //lets users know their location via the default button and zooms to it
       var locate = new Locate({
@@ -202,6 +203,27 @@
       //adds parks layer
       map.add(parksLayer, 0);
 
+      //adds custom search layer to query parks throughout the city
+      var searchWidget = new Search({
+         view: view,
+         allPlaceholder: "Find a Park",
+         sources: [
+           {
+           layer: parksLayer,
+           searchFields: ["PARK_NAME"],
+           displayField: "PARK_NAME",
+           exactMatch: false,
+           outFields: ["*"],
+           name: "Philadelphia Parks",
+           placeholder: "Example: Washington Square"
+         }],
+         includeDefaultSources: false
+       });
+
+       // Add the search widget to the top right corner of the view
+       view.ui.add(searchWidget, {
+         position: "top-right"
+       });
       //adds editing functionality
       var editor = new Editor({
         view: view,
